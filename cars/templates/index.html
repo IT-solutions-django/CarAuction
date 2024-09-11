@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Products</title>
+</head>
+<body>
+{% for car in cars %}
+<li>
+    <ul>Дата: {{ car.auction_date }}</ul>
+    <ul>Аукцион: {{ car.auction }}</ul>
+    <ul>Год: {{ car.year }}</ul>
+    <ul>Фотографии: {{ car.images }}</ul>
+    <ul>Модель: {{ car.model_id.name }}</ul>
+    <ul>Марка: {{ car.mark_id.name }}</ul>
+    <ul>Страна: {{ car.country_id.name }}</ul>
+</li>
+{% endfor %}
+</body>
+</html>
