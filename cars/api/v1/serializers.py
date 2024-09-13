@@ -1,47 +1,33 @@
 from rest_framework import serializers
+from cars.models import UniqueMarkModel, Car, Privod
 
 
-class CarPrivodSerializer(serializers.Serializer):
-    privod_name = serializers.CharField(source='priv_id__name')
-    count = serializers.IntegerField()
+# Serializer для ListDetailView
+class CarDetailSerializer(serializers.Serializer):
     category_name = serializers.SerializerMethodField()
+    count = serializers.IntegerField()
 
     class Meta:
-        fields = ('privod_name', 'count', 'category_name')
+        fields = ('category_name', 'count')
 
     def get_category_name(self, obj):
-
-        privod_name = obj.get('priv_id__name', '')
-
-        if privod_name == 'FF':
-            return 'Передний привод'
-
-        elif privod_name == 'FR':
-            return 'Задний привод'
-
-        return 'Полный привод'
+        field_name = self.context.get('field_name')
+        return obj.get(f'{field_name}', '')
 
 
-class CarKPPSerializer(serializers.Serializer):
-    kpp_type = serializers.CharField(source='kpp_type__name')
-    count = serializers.IntegerField()
-    category_name = serializers.SerializerMethodField()
+# Serializer для ListUniqueMarkModelView
+class CarUniqueMarkModelSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    cars = serializers.CharField()
 
-    class Meta:
-        fields = ('kpp_type', 'count', 'category_name')
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['cars'] = representation['cars'].split(',')
+        return representation
 
+
+# Serializer для ListNotDetailView
+class CarNotDetailSerializer(CarDetailSerializer):
     def get_category_name(self, obj):
-        kpp_name = obj.get('kpp_type__name', '')
-
-        if kpp_name.isalpha():
-            return 'Автоматическая'
-
-        return 'Механическая'
-
-
-class CarModelSerializer(serializers.Serializer):
-    model_name = serializers.CharField(source='model_id__name')
-    count = serializers.IntegerField()
-
-    class Meta:
-        fields = ('model_name', 'count')
+        field_name = self.context.get('field_name')
+        return obj.get(f'{field_name}__name', '')

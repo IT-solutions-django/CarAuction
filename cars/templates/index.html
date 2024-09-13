@@ -3,18 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <title>Products</title>
+    <style>
+        li {
+            list-style-type: none;
+        }
+    </style>
 </head>
 <body>
-{% for car in cars %}
+{% for car in page_obj %}
 <li>
     <ul>Дата: {{ car.auction_date }}</ul>
     <ul>Аукцион: {{ car.auction }}</ul>
     <ul>Год: {{ car.year }}</ul>
+    <ul>Объем двигателя: {{ car.eng_v }}</ul>
+    <ul>PW: {{ car.pw }}</ul>
+    <ul>GRADE: {{ car.grade }}</ul>
+    <ul>MILEAGE: {{ car.mileage }}</ul>
+    <ul>EQUIP: {{ car.equip }}</ul>
+    <ul>RATE: {{ car.rate }}</ul>
+    <ul>Стоимость: {{ car.finish }}</ul>
     <ul>Фотографии: {{ car.images }}</ul>
     <ul>Модель: {{ car.model_id.name }}</ul>
     <ul>Марка: {{ car.mark_id.name }}</ul>
+    <ul>Кузов: {{ car.kuzov_id.name}}</ul>
+    {% if car.true_color %}
+    <ul>Цвет: {{ car.true_color}}</ul>
+    {% else %}
+    <ul>Цвет: {{ car.color_id.name}}</ul>
+    {% endif %}
+    <ul>КПП: {{ car.true_kpp}}</ul>
+    <ul>Привод: {{ car.true_priv}}</ul>
     <ul>Страна: {{ car.country_id.name }}</ul>
+    <ul>Дата обновления записи: {{ car.update_date }}</ul>
+    <ul>Расходы в России: {{ car.expenses_rus }}</ul>
+    <ul>Расходы по стране экспортера: {{ car.expenses_jpn }}</ul>
+    <hr>
 </li>
 {% endfor %}
+
+<div class="pagination">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a href="?page=1">&laquo; first</a>
+            <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+        {% endif %}
+    </span>
+</div>
 </body>
 </html>

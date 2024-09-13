@@ -1,11 +1,11 @@
 from django.urls import path
-from cars.api.v1.views import ListPrivodView, ListKPPView, ListColorView, ListModelView
+from cars.api.v1.views import ListColorView, ListDetailView, ListUniqueMarkModelView, ListNotDetailView
 
 app_name = 'cars'
 
 urlpatterns = [
-    path('privod/', ListPrivodView.as_view(), name='privod'),
-    path('kpp/', ListKPPView.as_view(), name='kpp'),
     path('color/', ListColorView.as_view(), name='color'),
-    path('model/', ListModelView.as_view(), name='model'),
+    path('<str:field_name>/', ListDetailView.as_view(), name='field_name'),
+    path('v2/unique_mark_model/', ListUniqueMarkModelView.as_view(), name='unique_mark_model'),
+    path('v3/not_detail/<str:field_name>/', ListNotDetailView.as_view(), name='not_detail')
 ]
