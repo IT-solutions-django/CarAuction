@@ -428,7 +428,7 @@ with connections['sqlite'].cursor() as cursor:
         kpp_true = ''
         if kpp.name in car_transmission_types or kpp.name.isalpha():
             kpp_true = 'Автоматическая'
-        elif kpp.name in car_kpp_types:
+        elif kpp.name in car_kpp_types or not kpp.name.isalpha():
             kpp_true = 'Механическая'
 
         Car.objects.create(

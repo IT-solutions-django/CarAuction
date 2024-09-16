@@ -2,9 +2,9 @@ from django.core.exceptions import FieldError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
-from cars.models import Car, UniqueMarkModel, UniqueCarColor
+from cars.models import Car
 from django.db.models import Count
-from cars.api.v1.serializers import CarDetailSerializer, CarUniqueMarkModelSerializer, CarNotDetailSerializer
+from cars.api.v1.serializers import CarDetailSerializer, CarNotDetailSerializer
 
 
 # Вьюха для получения данных о кол-ве автомобилей с определенными параметрами (field_name)
@@ -40,32 +40,6 @@ class ListColorView(APIView):
         result = [{'main_color': true_color, 'car_colors': list(colors)} for true_color, colors in color_map.items()]
 
         return Response(result)
-
-
-# Вьюха для получения списка машин по фильтрации
-class ListUniqueMarkModelView(APIView):
-    permission_classes = [AllowAny]
-
-    model_serializer_map = {
-        'mark': UniqueMarkModel,
-        'color': UniqueCarColor
-    }
-
-    def get(self, request):
-        field_filter = request.GET
-        combined_results = []
-
-        for field_name, value in field_filter.items():
-            if not value:
-                continue
-            model_class = self.model_serializer_map.get(field_name)
-            queryset = model_class.objects.filter(name=value)
-            combined_results.extend(queryset)
-
-        combined_results = list(set(combined_results))
-
-        serializer = CarUniqueMarkModelSerializer(combined_results, many=True)
-        return Response(serializer.data)
 
 
 # Вьюха для получения данных о кол-ве авто,

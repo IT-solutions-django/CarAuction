@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
+from django.utils import timezone
 
 
 class NamedEntity(models.Model):
@@ -51,10 +52,24 @@ class Car(models.Model):
                                 null=True, help_text='Выберите тип привода автомобиля')
     country_id = models.ForeignKey('Country', on_delete=models.CASCADE, verbose_name='Страна автомобиля',
                                    help_text='Выберите страну производителя автомобиля')
+    age = models.IntegerField(verbose_name='Возраст автомобиля', help_text='Введите возраст автомобиля')
+    is_sunction = models.BooleanField()
 
     class Meta:
         verbose_name = 'Автомобиль'
         verbose_name_plural = 'Автомобили'
+
+    def save(self, *args, **kwargs):
+        current_year = timezone.now().year
+
+        self.age = int(current_year) - int(self.year)
+
+        if self.age in [3, 5]:
+            self.is_sunction = True
+        else:
+            self.is_sunction = False
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.auction} | {self.auction_date} | {self.mark_id.name} | {self.model_id.name}'
@@ -102,27 +117,43 @@ class Country(NamedEntity):
         verbose_name_plural = 'Страны автомобилей'
 
 
-class UniqueEntity(models.Model):
-    name = models.CharField(max_length=256, verbose_name='Название параметра', help_text='Введите название параметра')
-    cars = models.TextField(verbose_name='Список машин', help_text='Введите список машин')
+class UniqueMarkModel(NamedEntity):
+    class Meta:
+        verbose_name = 'Уникальная марка автомобиля'
+        verbose_name_plural = 'Уникальные марки автомобилей'
+
+
+class UniqueCarColor(NamedEntity):
+    class Meta:
+        verbose_name = 'Уникальный цвет автомобиля'
+        verbose_name_plural = 'Уникальные цвета автомобилей'
+
+
+class UniqueCarKpp(NamedEntity):
+    class Meta:
+        verbose_name = 'Уникальный КПП автомобиля'
+        verbose_name_plural = 'Уникальные КПП автомобилей'
+
+
+class UniqueCarPrivod(NamedEntity):
+    class Meta:
+        verbose_name = 'Уникальный привод автомобиля'
+        verbose_name_plural = 'Уникальные приводы автомобилей'
+
+
+class UniqueCarModel(NamedEntity):
+    mark_name = models.CharField(max_length=256, verbose_name='Марка модели автомобиля',
+                                 help_text='Введите марку модели автомобиля')
 
     class Meta:
-        abstract = True
-
-    def __str__(self):
-        return f'{self.name} | [{self.cars}]'
+        verbose_name = 'Уникальная модель автомобиля'
+        verbose_name_plural = 'Уникальные модели автомобилей'
 
 
-class UniqueMarkModel(UniqueEntity):
+class UniqueCarPw(NamedEntity):
     class Meta:
-        verbose_name = 'Список машин по марке'
-        verbose_name_plural = 'Списки машин по маркам'
-
-
-class UniqueCarColor(UniqueEntity):
-    class Meta:
-        verbose_name = 'Список машин по цвету'
-        verbose_name_plural = 'Списки машин по цветам'
+        verbose_name = 'Уникальная мощность автомобиля'
+        verbose_name_plural = 'Уникальные мощности автомобилей'
 
 
 class Currency(models.Model):
