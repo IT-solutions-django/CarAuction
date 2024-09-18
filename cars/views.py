@@ -28,8 +28,7 @@ def page_filter(request):
                                                                                                                  flat=True),
             False, True),
         'eng_v': (CarEngVEnum.eng_v_range(), False, False),
-        'pw': (UniqueCarPw.objects.values_list('name', flat=True), False, False),
-        'year': (CarYearEnum.year_range(), False, False)
+        'pw': (UniqueCarPw.objects.values_list('name', flat=True), False, False)
     }
 
     form = CarFilterForm(request.GET, dynamic_fields=filter_fields)
@@ -40,13 +39,26 @@ def page_filter(request):
 
     if filters:
         q_objects = Q()
+        year_from = filters.get('year_from', '')
+        year_to = filters.get('year_to', '')
+
+        if year_from and year_to:
+            q_objects &= Q(year__range=(year_from, year_to))
+        elif year_from:
+            q_objects &= Q(year__range=(year_from, CarYearEnum.MAX_YEAR.value))
+        elif year_to:
+            q_objects &= Q(year__range=(CarYearEnum.MIN_YEAR.value, year_to))
+
         for field, value in filters.items():
-            if filter_fields[field][1]:
-                q_objects &= Q(**{filter_fields[field][1]: value})
-            elif filter_fields[field][2]:
-                q_objects &= Q(**{f'{field}__name': value})
+            if field in ['year_from', 'year_to']:
+                continue
             else:
-                q_objects &= Q(**{field: value})
+                if filter_fields[field][1]:
+                    q_objects &= Q(**{filter_fields[field][1]: value})
+                elif filter_fields[field][2]:
+                    q_objects &= Q(**{f'{field}__name': value})
+                else:
+                    q_objects &= Q(**{field: value})
         cars = cars.filter(q_objects)
 
     paginator = Paginator(cars, 8)
