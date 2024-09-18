@@ -1,0 +1,17 @@
+{% extends "admin/change_form.html" %}
+
+{% block submit_buttons_bottom %}
+<input id="load-playlists-btn" value="Загрузить плей-листы" type="button"/>
+{{ block.super }}
+<script type="text/javascript">
+    document.getElementById('load-playlists-btn').onclick = function() {
+        var urlField = document.getElementById('id_url');
+        var urlValue = urlField ? urlField.value : '';
+
+        var baseUrl = "{% url 'admin:load-playlists' %}";
+        var fullUrl = baseUrl + "?url=" + encodeURIComponent(urlValue);
+
+        window.location.href = fullUrl;
+    }
+</script>
+{% endblock %}
