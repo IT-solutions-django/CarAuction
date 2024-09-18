@@ -100,6 +100,11 @@ class YouTubeChannelAdmin(admin.ModelAdmin):
 
 class PlayListAdmin(admin.ModelAdmin):
     readonly_fields = ('name', 'playlist_id', 'chanel')
+    fields = ('name', 'playlist_id', 'chanel')
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.select_related('chanel')
 
     def save_model(self, request, obj, form, change):
         super().save_model(request, obj, form, change)
@@ -118,7 +123,7 @@ class PlayListAdmin(admin.ModelAdmin):
                     'description': item['snippet']['description']
                 })
 
-            existing_video = Video.objects.filter(playlist=obj).values('title', 'id', 'description')
+            existing_video = obj.video.all().values('title', 'id', 'description')
             existing_video_dict = {video['title']: {'id': video['id'], 'description': video['description']} for
                                    video in existing_video}
 
@@ -139,8 +144,7 @@ class PlayListAdmin(admin.ModelAdmin):
                     new_video.append(
                         Video(
                             title=title,
-                            description=description,
-                            playlist=obj
+                            description=description
                         )
                     )
 
@@ -151,13 +155,22 @@ class PlayListAdmin(admin.ModelAdmin):
 
             with transaction.atomic():
                 if new_video:
-                    Video.objects.bulk_create(new_video)
+                    created_videos = Video.objects.bulk_create(new_video)
+                    obj.video.add(*created_videos)
+
                 if video_to_update_objects:
                     Video.objects.bulk_update(
                         video_to_update_objects,
                         ['title', 'description']
                     )
 
+                updated_video_ids = [video_id for video_id in video_to_update.keys()]
+                obj.video.add(*updated_video_ids)
+
 
 class VideoAdmin(admin.ModelAdmin):
-    readonly_fields = ('title', 'description', 'playlist')
+    readonly_fields = ('title', 'description')
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        return queryset.prefetch_related('playlists')

@@ -16,6 +16,7 @@ class PlayList(models.Model):
     name = models.CharField(max_length=256, verbose_name='Название плей-листа', help_text='Введите название плей-листа')
     playlist_id = models.CharField(max_length=255, verbose_name='ID плейлиста', help_text='Введите ID плейлиста')
     chanel = models.ForeignKey('Chanel', on_delete=models.CASCADE, verbose_name='Канал', help_text='Введите канал')
+    video = models.ManyToManyField('Video', related_name='playlists', verbose_name='Видео', help_text='Выберите видео')
 
     class Meta:
         verbose_name = 'Плей-лист'
@@ -28,12 +29,11 @@ class PlayList(models.Model):
 class Video(models.Model):
     title = models.CharField(max_length=512, verbose_name='Название видео', help_text='Введите название видео')
     description = models.TextField(verbose_name='Описание видео', help_text='Введите описание видео')
-    playlist = models.ForeignKey('PlayList', on_delete=models.CASCADE, verbose_name='Плей-лист',
-                                 help_text='Укажите плей-лист')
 
     class Meta:
         verbose_name = 'Видео'
         verbose_name_plural = 'Видео'
 
     def __str__(self):
-        return f'Плей-лист: {self.playlist.name} | Название видео: {self.title}'
+        playlists_names = ", ".join(playlist.name for playlist in self.playlists.all())
+        return f'Название видео: {self.title} | Плейлисты: {playlists_names}'
