@@ -44,7 +44,7 @@ class VideoApi:
         request = youtube.playlistItems().list(
             part='snippet',
             playlistId=playlist_id,
-            maxResults=50
+            maxResults=15
         )
 
         return request

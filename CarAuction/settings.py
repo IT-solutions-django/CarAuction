@@ -143,14 +143,19 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CELERY_BEAT_SCHEDULE = {
-    'get-car-models-every-hour': {
-        'task': 'cars.tasks.update_all_models',
-        'schedule': crontab(minute='*/2'),
-    },
+    # 'get-car-models-every-hour': {
+    #     'task': 'cars.tasks.update_all_models',
+    #     'schedule': crontab(minute='*/2'),
+    # },
+    #
+    # 'fetch-data-every-day-at-9am': {
+    #     'task': 'cars.tasks.parsing_currency',
+    #     'schedule': crontab(minute='*/5'),
+    # },
 
-    'fetch-data-every-day-at-9am': {
-        'task': 'cars.tasks.parsing_currency',
-        'schedule': crontab(minute='*/5'),
+    'load_latest_videos_daily': {
+        'task': 'youtube.tasks.load_video_for_playlists',
+        'schedule': crontab(minute='*/2'),
     },
 }
 
