@@ -36,14 +36,21 @@ class YouTubeChannelAdmin(admin.ModelAdmin):
                 playlist_id=form.cleaned_data.get('selected_playlist').playlist_id)
             response = request.execute()
 
+            is_shorts = 'shorts' in form.cleaned_data.get('selected_playlist').name.lower()
+
             video_titles = []
 
             for item in response['items']:
-                video_titles.append({
+                video_data = {
                     'title': item['snippet']['title'],
                     'description': item['snippet']['description'],
                     'video_id': item['snippet']['resourceId']['videoId']
-                })
+                }
+
+                if is_shorts:
+                    video_data['url_shorts'] = f'https://www.youtube.com/shorts/{video_data["video_id"]}'
+
+                video_titles.append(video_data)
 
             video_ids = [video_data['video_id'] for video_data in video_titles]
 
@@ -69,7 +76,8 @@ class YouTubeChannelAdmin(admin.ModelAdmin):
                         Video(
                             title=title,
                             description=description,
-                            video_id=id_video
+                            video_id=id_video,
+                            url_shorts=video.get('url_shorts', None)
                         )
                     )
 

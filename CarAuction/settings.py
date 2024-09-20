@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'rest_framework',
     'cars',
-    'youtube'
+    'youtube',
+    'review_company'
 ]
 
 MIDDLEWARE = [

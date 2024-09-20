@@ -22,7 +22,8 @@ import debug_toolbar
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('main/', include('cars.urls', namespace='main')),
-    path('api/', include('cars.api.v1.urls', namespace='api'))
+    path('api/', include('cars.api.v1.urls', namespace='api')),
+    path('reviews/', include('review_company.urls', namespace='reviews'))
 ]
 
 if settings.DEBUG:
